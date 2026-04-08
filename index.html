@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruang Rasa – Tempat Aman Bercerita</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <div id="navbar-container"></div>
+
+  <main class="flex-1">
+
+     <!-- ===== HERO ===== -->
+    <section class="relative w-full overflow-hidden" style="min-height: 420px;">
+      <!-- Background Image -->
+      <img
+        src="public/images/cover.png"
+        alt="Cover Ruang Rasa"
+        class="absolute inset-0 w-full h-full object-cover"
+      >
+      <!-- Overlay gelap tipis supaya teks terbaca -->
+      <div class="absolute inset-0" style="background: linear-gradient(to right, rgba(252,228,236,0.85) 0%, rgba(252,228,236,0.55) 60%, rgba(252,228,236,0.1) 100%);"></div>
+      <!-- Teks di atas gambar -->
+      <div class="relative z-10 max-w-5xl mx-auto px-6 py-16 md:py-24 flex items-center" style="min-height: 420px;">
+        <div class="animate-fade-up max-w-lg">
+          <p class="text-sm mb-2" style="color: var(--text-medium);">Selamat Datang Di Ruang Rasa</p>
+          <h1 class="text-3xl md:text-4xl font-bold leading-tight mb-6" style="color: var(--pink-primary);">
+            Tempat aman untuk bercerita, melepaskan beban, dan tumbuh tanpa takut dinilai.
+          </h1>
+          <a href="pages/mulai-curhat.html" class="btn-primary text-lg px-8 py-3" style="display:inline-block;">
+            mulai curhat
+          </a>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===== QUOTE BANNER ===== -->
+    <section class="py-10 px-4" style="background-color: #FFCCBC;">
+      <div class="max-w-2xl mx-auto text-center">
+        <p class="text-base md:text-lg leading-relaxed" style="color: var(--text-dark); font-style: italic;">
+          Di setiap rasa yang sulit diucapkan, selalu ada ruang untukmu di sini.<br>
+          Mari pulih bersama, perlahan tapi pasti.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== FEATURES ICONS ===== -->
+    <section class="py-12 px-4">
+      <div class="max-w-3xl mx-auto grid grid-cols-3 gap-4 md:gap-8">
+
+        <!-- Curhat -->
+        <a href="pages/mulai-curhat.html" class="flex flex-col items-center gap-3">
+          <div class="feature-card p-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 md:w-14 md:h-14" viewBox="0 0 24 24" fill="none" stroke="#37474F" stroke-width="1.8">
+              <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+          </div>
+          <span class="text-sm text-center" style="color: var(--text-medium); font-weight:600;">Mulai Curhat</span>
+        </a>
+
+        <!-- Baca -->
+        <a href="pages/baca-cerita.html" class="flex flex-col items-center gap-3">
+          <div class="feature-card p-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 md:w-14 md:h-14" viewBox="0 0 24 24" fill="#37474F">
+              <path d="M2 6.5A2.5 2.5 0 0 1 4.5 4H20a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H4.5A2.5 2.5 0 0 1 2 16.5v-10zM4.5 6A.5.5 0 0 0 4 6.5v10a.5.5 0 0 0 .5.5H19V6H4.5zM7 9h8v2H7V9zm0 4h5v2H7v-2z"/>
+            </svg>
+          </div>
+          <span class="text-sm text-center" style="color: var(--text-medium); font-weight:600;">Baca Cerita</span>
+        </a>
+
+        <!-- Riwayat -->
+        <a href="pages/riwayat.html" class="flex flex-col items-center gap-3">
+          <div class="feature-card p-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 md:w-14 md:h-14" viewBox="0 0 24 24" fill="#37474F">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+            </svg>
+          </div>
+          <span class="text-sm text-center" style="color: var(--text-medium); font-weight:600;">Riwayat</span>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ===== WHY RUANG RASA ===== -->
+    <section class="py-12 px-4">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-center text-2xl md:text-3xl font-bold mb-8" style="color: var(--text-dark);">Kenapa Ruang Rasa?</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          <div class="rounded-2xl flex items-center gap-4 px-5 py-4" style="background-color: #FFCCBC;">
+            <div class="rounded-xl p-3 flex-shrink-0" style="background-color: var(--pink-primary);">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="white">
+                <path d="M12 1C8.676 1 6 3.676 6 7v1H4a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-2V7c0-3.324-2.676-6-6-6zm0 2c2.276 0 4 1.724 4 4v1H8V7c0-2.276 1.724-4 4-4zm0 9a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold text-sm mb-1" style="color: var(--text-dark);">Privasi Terjaga</p>
+              <p class="text-xs" style="color: var(--text-medium);">Cerita kamu aman, identitasmu terlindungi</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl flex items-center gap-4 px-5 py-4" style="background-color: #FFCCBC;">
+            <div class="rounded-xl p-3 flex-shrink-0" style="background-color: var(--pink-primary);">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="white">
+                <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold text-sm mb-1" style="color: var(--text-dark);">Tanpa Penghakiman</p>
+              <p class="text-xs" style="color: var(--text-medium);">Semua perasaan valid dan diterima di sini</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl flex items-center gap-4 px-5 py-4 sm:col-span-2" style="background-color: #FFCCBC;">
+            <div class="rounded-xl p-3 flex-shrink-0" style="background-color: var(--pink-primary);">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="white">
+                <path d="M18 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2zm-1 15H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold text-sm mb-1" style="color: var(--text-dark);">Komunitas Suportif</p>
+              <p class="text-xs" style="color: var(--text-medium);">Dapatkan dukungan dari teman-teman yang peduli</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="js/components.js"></script>
+  <script>
+    initPage('beranda');
+    const user = JSON.parse(localStorage.getItem('rr_user') || '{}');
+    const initial = (user.nama_panggilan || user.email || 'A')[0].toUpperCase();
+    const avatarEl = document.getElementById('avatarInitial');
+    if (avatarEl) avatarEl.textContent = initial;
+  </script>
+</body>
+</html>

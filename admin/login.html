@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin – Ruang Rasa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Nunito',sans-serif;min-height:100vh;background:linear-gradient(135deg,#1a0010 0%,#3d0020 50%,#880e4f 100%);display:flex;align-items:center;justify-content:center;padding:20px}
+    .card{background:#fff;border-radius:24px;padding:48px 40px 40px;width:100%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,0.4);position:relative}
+    .pill{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#880e4f,#c2185b);color:#fff;font-size:0.7rem;font-weight:800;letter-spacing:0.15em;padding:5px 20px;border-radius:999px;white-space:nowrap}
+    .logo{text-align:center;margin-bottom:28px}
+    .logo img{width:64px;height:64px;object-fit:contain;border-radius:50%;margin-bottom:10px}
+    .logo h1{font-family:'Playfair Display',serif;font-size:1.6rem;color:#880e4f}
+    .logo p{font-size:0.78rem;color:#bbb;margin-top:4px}
+    .field{margin-bottom:18px}
+    .field label{display:block;font-weight:700;color:#3d0020;font-size:0.82rem;margin-bottom:6px;letter-spacing:0.03em}
+    .field input{width:100%;border:1.5px solid #e8d8e0;border-radius:10px;padding:11px 14px;font-family:'Nunito',sans-serif;font-size:0.95rem;color:#3d0020;outline:none;background:#faf7f0;transition:border-color 0.2s,box-shadow 0.2s}
+    .field input:focus{border-color:#c2185b;box-shadow:0 0 0 3px rgba(194,24,91,0.1)}
+    .btn{width:100%;background:linear-gradient(135deg,#880e4f,#c2185b);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;margin-top:6px;transition:all 0.2s;letter-spacing:0.03em}
+    .btn:hover{background:linear-gradient(135deg,#6a0636,#880e4f);transform:translateY(-1px);box-shadow:0 6px 20px rgba(136,14,79,0.4)}
+    .err{background:#fff0f0;border:1px solid #fca5a5;color:#dc2626;border-radius:8px;padding:10px 14px;font-size:0.82rem;text-align:center;margin-bottom:14px;display:none}
+    .back{display:block;text-align:center;margin-top:18px;font-size:0.8rem;color:#ccc;text-decoration:none;transition:color 0.2s}
+    .back:hover{color:#c2185b}
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="pill">✦ ADMIN PANEL ✦</div>
+  <div class="logo">
+    <img src="../public/images/remove.png" alt="Logo" onerror="this.style.display='none'">
+    <h1>Ruang Rasa</h1>
+    <p>Masuk sebagai administrator</p>
+  </div>
+  <div id="err" class="err"></div>
+  <div class="field"><label>Email Admin</label><input type="email" id="email" placeholder="Admin@gmail.com"></div>
+  <div class="field"><label>Password</label><input type="password" id="pass" placeholder="••••••••"></div>
+  <button class="btn" onclick="login()">Masuk ke Dashboard</button>
+  <a href="../index.html" class="back">← Kembali ke website</a>
+</div>
+<script>
+  if(sessionStorage.getItem('rr_admin')) location.href='dashboard.html';
+  async function login(){
+    const email=document.getElementById('email').value.trim();
+    const pass=document.getElementById('pass').value;
+    const err=document.getElementById('err');
+    err.style.display='none';
+    if(!email||!pass){err.textContent='Email dan password wajib diisi!';err.style.display='block';return;}
+    try{
+      const res=await fetch('../api/admin.php?action=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+      const json=await res.json();
+      if(json.success){sessionStorage.setItem('rr_admin',JSON.stringify(json.admin));location.href='dashboard.html';}
+      else{err.textContent=json.message||'Login gagal';err.style.display='block';}
+    }catch(e){err.textContent='Gagal menghubungi server.';err.style.display='block';}
+  }
+  document.addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+</script>
+</body>
+</html>

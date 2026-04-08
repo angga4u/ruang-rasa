@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Baca Cerita – Ruang Rasa</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <div id="navbar-container"></div>
+
+  <main class="flex-1 py-10 px-4">
+    <div class="max-w-4xl mx-auto">
+
+      <h1 class="text-2xl md:text-3xl font-bold text-center mb-8" style="font-family:'Playfair Display',serif; color: var(--text-dark);">
+        Mulai Baca Cerita
+      </h1>
+
+      <div class="flex flex-wrap gap-2 justify-center mb-8">
+        <button class="emotion-badge active" data-value="" onclick="filterStories('')">Semua</button>
+        <button class="emotion-badge" data-value="sedih" onclick="filterStories('sedih')">😢 Sedih</button>
+        <button class="emotion-badge" data-value="senang" onclick="filterStories('senang')">😊 Senang</button>
+        <button class="emotion-badge" data-value="kesal" onclick="filterStories('kesal')">😤 Kesal</button>
+        <button class="emotion-badge" data-value="cemas" onclick="filterStories('cemas')">😰 Cemas</button>
+        <button class="emotion-badge" data-value="bingung" onclick="filterStories('bingung')">😕 Bingung</button>
+        <button class="emotion-badge" data-value="lelah" onclick="filterStories('lelah')">😮‍💨 Lelah</button>
+      </div>
+
+      <div id="loadingState" class="text-center py-16">
+        <p class="text-3xl mb-3 animate-pulse">🌸</p>
+        <p class="text-sm" style="color: #aaa;">Memuat cerita...</p>
+      </div>
+
+      <div id="storyGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+      </div>
+
+      <div id="emptyState" class="hidden text-center py-16">
+        <p class="text-4xl mb-4">🌸</p>
+        <p class="text-lg font-bold" style="color: var(--text-medium);">Belum ada cerita di sini</p>
+        <p class="text-sm mt-2 mb-6" style="color: #888;">Jadilah yang pertama berbagi!</p>
+        <a href="../pages/mulai-curhat.html" class="btn-primary">Mulai Curhat</a>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="../js/components.js"></script>
+  <script>
+    initPage('cerita');
+
+    const user = JSON.parse(localStorage.getItem('rr_user') || '{}');
+    const initial = (user.nama_panggilan || user.email || 'A')[0].toUpperCase();
+    setTimeout(() => {
+      const avatarEl = document.getElementById('avatarInitial');
+      if (avatarEl) avatarEl.textContent = initial;
+    }, 50);
+
+    let currentFilter = '';
+
+    function filterStories(value) {
+      currentFilter = value;
+      document.querySelectorAll('.emotion-badge').forEach(b => {
+        b.classList.toggle('active', b.dataset.value === value);
+      });
+      renderStories();
+    }
+
+    async function renderStories() {
+      const grid     = document.getElementById('storyGrid');
+      const empty    = document.getElementById('emptyState');
+      const loading  = document.getElementById('loadingState');
+
+      loading.classList.remove('hidden');
+      grid.classList.add('hidden');
+      empty.classList.add('hidden');
+
+      const stories = await DB.getStories(currentFilter);
+
+      loading.classList.add('hidden');
+
+      if (!stories.length) {
+        empty.classList.remove('hidden');
+        return;
+      }
+
+      grid.classList.remove('hidden');
+      grid.innerHTML = stories.map(story => `
+        <div class="story-card animate-fade-up">
+          <div class="card-meta">
+            <span>By: <strong>${escapeHtml(story.nama_panggilan || 'Anonim')}</strong></span>
+            <span>${timeAgo(story.created_at)}</span>
+          </div>
+          ${story.judul ? `<h2 class="card-title">${escapeHtml(story.judul)}</h2>` : ''}
+          <p class="card-excerpt">${escapeHtml((story.isi || '').substring(0, 120))}${story.isi && story.isi.length > 120 ? '...' : ''}</p>
+          <div class="flex items-center justify-between mt-2">
+            <a href="detail-cerita.html?id=${story.id}" class="read-more">
+              Baca selengkapnya
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <button onclick="handleLike(${story.id}, this)" class="flex items-center gap-1 text-sm transition-transform hover:scale-110" style="color: var(--pink-primary); background:none; border:none; cursor:pointer;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/></svg>
+              <span id="like-count-${story.id}">${story.likes || 0}</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function handleLike(id, btn) {
+      btn.disabled = true;
+      const result = await DB.toggleLike(id);
+      btn.disabled = false;
+      if (result.success) {
+        document.getElementById('like-count-' + id).textContent = result.total;
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    renderStories();
+  </script>
+</body>
+</html>

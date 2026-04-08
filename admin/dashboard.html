@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard – Ruang Rasa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--sidebar-w:240px;--pink:#c2185b;--pink-dark:#880e4f;--bg:#f5f0f3;--white:#fff;--text:#3d0020;--muted:#999}
+    body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;display:flex}
+
+    /* SIDEBAR */
+    .sidebar{width:var(--sidebar-w);background:linear-gradient(180deg,#1a0010 0%,#3d0020 55%,#880e4f 100%);min-height:100vh;position:fixed;top:0;left:0;z-index:100;display:flex;flex-direction:column;transition:transform 0.3s}
+    .sb-logo{padding:24px 20px 18px;border-bottom:1px solid rgba(255,255,255,0.08);text-align:center}
+    .sb-logo img{width:48px;height:48px;border-radius:50%;object-fit:contain;margin-bottom:8px}
+    .sb-logo h2{font-family:'Playfair Display',serif;color:#fff;font-size:1.15rem;line-height:1}
+    .sb-logo p{color:rgba(255,255,255,0.4);font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;margin-top:3px}
+    .sb-nav{flex:1;padding:12px 0;overflow-y:auto}
+    .nav-group-label{padding:14px 20px 4px;color:rgba(255,255,255,0.3);font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:800}
+    .nav-item{display:flex;align-items:center;gap:11px;padding:11px 20px;color:rgba(255,255,255,0.65);font-weight:600;font-size:0.87rem;cursor:pointer;border-left:3px solid transparent;transition:all 0.18s;text-decoration:none;user-select:none}
+    .nav-item:hover{background:rgba(255,255,255,0.07);color:#fff}
+    .nav-item.active{background:rgba(255,255,255,0.1);color:#fff;border-left-color:#f48fb1}
+    .nav-item svg{width:17px;height:17px;flex-shrink:0;opacity:0.8}
+    .nav-item.active svg{opacity:1}
+    .sb-footer{padding:14px 20px;border-top:1px solid rgba(255,255,255,0.08)}
+    .btn-logout{width:100%;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:9px;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s}
+    .btn-logout:hover{background:rgba(255,255,255,0.15);color:#fff}
+
+    /* MAIN */
+    .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+    .topbar{background:var(--white);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0e0e8;position:sticky;top:0;z-index:50;gap:12px}
+    .topbar-left{display:flex;align-items:center;gap:12px}
+    .menu-toggle{display:none;background:none;border:none;cursor:pointer;padding:4px}
+    .menu-toggle svg{width:22px;height:22px;stroke:#880e4f}
+    .topbar h1{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--text)}
+    .admin-chip{display:flex;align-items:center;gap:8px;background:#fce4ec;padding:5px 14px 5px 6px;border-radius:999px}
+    .admin-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#f48fb1,#c2185b);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:0.75rem}
+    .admin-chip span{font-size:0.82rem;font-weight:700;color:#880e4f}
+    .content{padding:24px 28px;flex:1}
+
+    /* PAGE SECTION */
+    .page-section{display:none}.page-section.active{display:block}
+
+    /* STAT CARDS */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px;margin-bottom:24px}
+    .stat-card{background:var(--white);border-radius:16px;padding:18px;box-shadow:0 2px 10px rgba(136,14,79,0.05);transition:transform 0.2s,box-shadow 0.2s;cursor:default}
+    .stat-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(136,14,79,0.1)}
+    .stat-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:10px}
+    .stat-val{font-size:1.9rem;font-weight:800;color:var(--text);line-height:1}
+    .stat-lbl{font-size:0.75rem;color:var(--muted);font-weight:600;margin-top:4px}
+
+    /* CHART */
+    .chart-card{background:var(--white);border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(136,14,79,0.05);margin-bottom:24px}
+    .chart-bars{display:flex;align-items:flex-end;gap:6px;height:90px;margin-top:12px}
+    .chart-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+    .chart-bar{width:100%;background:linear-gradient(180deg,#f48fb1,#c2185b);border-radius:4px 4px 0 0;min-height:4px;transition:height 0.6s ease}
+    .chart-lbl{font-size:0.6rem;color:var(--muted);font-weight:700}
+
+    /* SECTION TITLE */
+    .sec-title{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .sec-title::after{content:'';flex:1;height:1px;background:#f0e0e8}
+
+    /* TABLE */
+    .tbl-card{background:var(--white);border-radius:16px;box-shadow:0 2px 10px rgba(136,14,79,0.05);overflow:hidden;margin-bottom:24px}
+    .tbl-head{padding:14px 18px;border-bottom:1px solid #f8eef3;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .tbl-head h3{font-weight:800;color:var(--text);font-size:0.9rem}
+    .filters{display:flex;gap:8px;flex-wrap:wrap}
+    .fi{border:1.5px solid #f0e0e8;border-radius:8px;padding:6px 10px;font-family:'Nunito',sans-serif;font-size:0.8rem;outline:none;color:var(--text);transition:border-color 0.2s;background:#fff}
+    .fi:focus{border-color:var(--pink)}
+    .tbl-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse}
+    th{background:#fdf0f5;padding:10px 14px;text-align:left;font-size:0.72rem;font-weight:800;color:var(--pink-dark);letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap}
+    td{padding:10px 14px;border-bottom:1px solid #fdf0f5;font-size:0.84rem;color:#555;vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#fffafc}
+    .empty-row td{text-align:center;color:#ddd;padding:28px;font-size:0.85rem}
+
+    /* BADGES */
+    .badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:0.7rem;font-weight:700}
+    .b-publik{background:#dcfce7;color:#15803d}
+    .b-anonim{background:#f3f4f6;color:#6b7280}
+    .b-sedih{background:#dbeafe;color:#1d4ed8}
+    .b-senang{background:#dcfce7;color:#15803d}
+    .b-kesal{background:#fee2e2;color:#dc2626}
+    .b-cemas{background:#fef3c7;color:#b45309}
+    .b-bingung{background:#ede9fe;color:#7c3aed}
+    .b-lelah{background:#f1f5f9;color:#475569}
+    .b-admin{background:#fce4ec;color:#880e4f}
+
+    /* BUTTONS */
+    .btn-xs{padding:4px 10px;border-radius:6px;font-size:0.75rem;font-weight:700;cursor:pointer;border:none;transition:all 0.15s;white-space:nowrap}
+    .btn-view{background:#dbeafe;color:#1d4ed8}.btn-view:hover{background:#1d4ed8;color:#fff}
+    .btn-del{background:#fee2e2;color:#dc2626}.btn-del:hover{background:#dc2626;color:#fff}
+    .btn-like{background:#fce4ec;color:#c2185b}.btn-like.liked{background:#c2185b;color:#fff}
+
+    /* MODAL */
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
+    .modal-bg.open{display:flex}
+    .modal{background:#fff;border-radius:20px;width:100%;max-width:540px;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+    .modal-top{padding:22px 24px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .modal-top h2{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--pink-dark);flex:1}
+    .modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:#bbb;line-height:1;padding:0;transition:color 0.2s}
+    .modal-close:hover{color:var(--pink)}
+    .modal-body{padding:16px 24px 24px}
+    .modal-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+    .modal-isi{background:#fdf0f5;border-radius:10px;padding:14px;line-height:1.8;color:var(--text);white-space:pre-wrap;font-size:0.9rem;margin-bottom:16px}
+    .modal-stats{display:flex;gap:16px;font-size:0.82rem;color:var(--muted);margin-bottom:16px}
+    .modal-stats span{display:flex;align-items:center;gap:4px}
+    .dukungan-list{margin-bottom:16px}
+    .duk-item{display:flex;gap:10px;margin-bottom:10px}
+    .duk-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;flex-shrink:0}
+    .duk-av.admin-av-d{background:linear-gradient(135deg,#f48fb1,#c2185b);color:#fff}
+    .duk-av.user-av-d{background:#f3f4f6;color:#880e4f}
+    .duk-bubble{flex:1;background:#f8f4f6;border-radius:10px;padding:10px 12px}
+    .duk-bubble.admin-bubble{background:#fce4ec}
+    .duk-name{font-size:0.78rem;font-weight:800;color:var(--pink-dark);margin-bottom:2px}
+    .duk-text{font-size:0.85rem;color:#555}
+    .duk-time{font-size:0.7rem;color:#bbb;margin-top:4px}
+    .reply-section{border-top:1px solid #f0e0e8;padding-top:14px}
+    .reply-section p{font-size:0.82rem;font-weight:700;color:var(--pink-dark);margin-bottom:8px}
+    .reply-ta{width:100%;border:1.5px solid #f0e0e8;border-radius:10px;padding:10px 12px;font-family:'Nunito',sans-serif;font-size:0.87rem;outline:none;resize:vertical;min-height:72px;transition:border-color 0.2s}
+    .reply-ta:focus{border-color:var(--pink)}
+    .reply-actions{display:flex;gap:8px;margin-top:10px}
+    .btn-send{background:linear-gradient(135deg,var(--pink-dark),var(--pink));color:#fff;border:none;border-radius:9px;padding:9px 20px;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer;transition:opacity 0.2s}
+    .btn-send:hover{opacity:0.85}
+    .btn-cancel{background:#f3f4f6;color:#666;border:none;border-radius:9px;padding:9px 16px;font-family:'Nunito',sans-serif;font-weight:700;font-size:0.85rem;cursor:pointer}
+
+    /* OVERLAY for mobile */
+    .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:99}
+
+    /* RESPONSIVE */
+    @media(max-width:768px){
+      .sidebar{transform:translateX(-100%)}
+      .sidebar.open{transform:translateX(0)}
+      .sb-overlay.show{display:block}
+      .main{margin-left:0}
+      .menu-toggle{display:flex}
+      .content{padding:16px}
+      .stats-grid{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <img src="../public/images/logo.jpeg" alt="Logo" onerror="this.style.display='none'">
+    <h2>Ruang Rasa</h2>
+    <p>Admin Panel</p>
+  </div>
+  <nav class="sb-nav">
+    <div class="nav-group-label">Utama</div>
+    <a class="nav-item active" onclick="go('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a>
+    <div class="nav-group-label">Konten</div>
+    <a class="nav-item" onclick="go('cerita',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Kelola Cerita
+    </a>
+    <a class="nav-item" onclick="go('dukungan',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Kelola Dukungan
+    </a>
+    <div class="nav-group-label">Pengguna</div>
+    <a class="nav-item" onclick="go('users',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Kelola User
+    </a>
+    <div class="nav-group-label">Akun</div>
+    <a class="nav-item" onclick="doLogout()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </a>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="menu-toggle" onclick="toggleSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <h1 id="pageTitle">Dashboard</h1>
+    </div>
+    <div class="admin-chip">
+      <div class="admin-av" id="adminAv">A</div>
+      <span id="adminName">Admin</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div id="page-dashboard" class="page-section active">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon" style="background:#fce4ec">📝</div><div class="stat-val" id="s-cerita">–</div><div class="stat-lbl">Total Cerita</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#e0f2fe">🌍</div><div class="stat-val" id="s-publik">–</div><div class="stat-lbl">Cerita Publik</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#f3f4f6">🔒</div><div class="stat-val" id="s-anonim">–</div><div class="stat-lbl">Cerita Anonim</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#dcfce7">💬</div><div class="stat-val" id="s-dukungan">–</div><div class="stat-lbl">Total Dukungan</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#fef3c7">❤️</div><div class="stat-val" id="s-likes">–</div><div class="stat-lbl">Total Likes</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:#ede9fe">👥</div><div class="stat-val" id="s-users">–</div><div class="stat-lbl">Total User</div></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="sec-title">📈 Cerita 7 Hari Terakhir</div>
+        <div class="chart-bars" id="chartBars"><span style="color:#ddd;font-size:0.82rem">Memuat...</span></div>
+      </div>
+
+      <div class="sec-title">🆕 Cerita Terbaru</div>
+      <div class="tbl-card">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Judul</th><th>Penulis</th><th>Perasaan</th><th>Privasi</th><th>Waktu</th><th>Aksi</th></tr></thead>
+            <tbody id="tb-recent"><tr class="empty-row"><td colspan="6">Memuat...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CERITA ===== -->
+    <div id="page-cerita" class="page-section">
+      <div class="tbl-card">
+        <div class="tbl-head">
+          <h3>📋 Semua Cerita</h3>
+          <div class="filters">
+            <input class="fi" id="srCerita" placeholder="🔍 Cari..." oninput="loadCerita()">
+            <select class="fi" id="flPrivasi" onchange="loadCerita()"><option value="">Semua Privasi</option><option value="publik">🌍 Publik</option><option value="anonim">🔒 Anonim</option></select>
+            <select class="fi" id="flPerasaan" onchange="loadCerita()"><option value="">Semua Perasaan</option><option value="sedih">Sedih</option><option value="senang">Senang</option><option value="kesal">Kesal</option><option value="cemas">Cemas</option><option value="bingung">Bingung</option><option value="lelah">Lelah</option></select>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Judul</th><th>Penulis</th><th>Email</th><th>Perasaan</th><th>Privasi</th><th>❤️</th><th>💬</th><th>Waktu</th><th>Aksi</th></tr></thead>
+            <tbody id="tb-cerita"><tr class="empty-row"><td colspan="10">Memuat...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DUKUNGAN ===== -->
+    <div id="page-dukungan" class="page-section">
+      <div class="tbl-card">
+        <div class="tbl-head"><h3>💬 Semua Dukungan & Balasan Admin</h3></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Dari</th><th>Isi</th><th>Untuk Cerita</th><th>Tipe</th><th>Waktu</th><th>Aksi</th></tr></thead>
+            <tbody id="tb-dukungan"><tr class="empty-row"><td colspan="7">Memuat...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== USERS ===== -->
+    <div id="page-users" class="page-section">
+      <div class="tbl-card">
+        <div class="tbl-head"><h3>👥 Semua Pengguna</h3></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Nama</th><th>Email</th><th>Jumlah Cerita</th><th>Bergabung</th><th>Aksi</th></tr></thead>
+            <tbody id="tb-users"><tr class="empty-row"><td colspan="6">Memuat...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL DETAIL -->
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-top">
+      <h2 id="modalTitle">Detail Cerita</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta" id="modalMeta"></div>
+      <div class="modal-isi" id="modalIsi"></div>
+      <div class="modal-stats" id="modalStats"></div>
+      <div class="dukungan-list" id="dukList"></div>
+      <div class="reply-section">
+        <p>✍️ Balas sebagai <strong>Admin</strong>:</p>
+        <textarea class="reply-ta" id="replyTa" placeholder="Tulis balasan yang hangat dan supportif..."></textarea>
+        <div class="reply-actions">
+          <button class="btn-send" onclick="kirimBalasan()">Kirim Balasan</button>
+          <button class="btn-cancel" onclick="closeModal()">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = '../api/admin.php';
+  const adminData = JSON.parse(sessionStorage.getItem('rr_admin')||'{}');
+  if(!sessionStorage.getItem('rr_admin')) location.href='login.html';
+
+  document.getElementById('adminName').textContent = adminData.nama||'Admin';
+  document.getElementById('adminAv').textContent   = (adminData.nama||'A')[0].toUpperCase();
+
+  let currentCeritaId = null;
+
+  const titles = {dashboard:'Dashboard',cerita:'Kelola Cerita',dukungan:'Kelola Dukungan',users:'Kelola User'};
+
+  function go(page, el) {
+    document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.getElementById('page-'+page).classList.add('active');
+    if(el) el.classList.add('active');
+    document.getElementById('pageTitle').textContent = titles[page]||page;
+    closeSidebar();
+    if(page==='dashboard') loadDashboard();
+    else if(page==='cerita') loadCerita();
+    else if(page==='dukungan') loadDukungan();
+    else if(page==='users') loadUsers();
+  }
+
+  function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sbOverlay').classList.toggle('show')}
+  function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sbOverlay').classList.remove('show')}
+
+  function esc(s){const d=document.createElement('div');d.appendChild(document.createTextNode(s||''));return d.innerHTML}
+  function ago(d){const diff=Math.floor((new Date()-new Date(d))/1000);if(diff<60)return'baru saja';if(diff<3600)return Math.floor(diff/60)+' mnt lalu';if(diff<86400)return Math.floor(diff/3600)+' jam lalu';return Math.floor(diff/86400)+' hari lalu';}
+  function badgeP(p){return`<span class="badge b-${p}">${p}</span>`}
+  function badgePr(p){return p==='publik'?'<span class="badge b-publik">🌍 Publik</span>':'<span class="badge b-anonim">🔒 Anonim</span>'}
+
+  // ===== DASHBOARD =====
+  async function loadDashboard(){
+    const r=await fetch(API+'?action=stats');
+    const j=await r.json();
+    if(!j.success)return;
+    const d=j.data;
+    document.getElementById('s-cerita').textContent=d.total_cerita;
+    document.getElementById('s-publik').textContent=d.cerita_publik;
+    document.getElementById('s-anonim').textContent=d.cerita_anonim;
+    document.getElementById('s-dukungan').textContent=d.total_dukungan;
+    document.getElementById('s-likes').textContent=d.total_likes;
+    document.getElementById('s-users').textContent=d.total_users;
+
+    // Chart
+    const cb=document.getElementById('chartBars');
+    if(d.chart&&d.chart.length){
+      const mx=Math.max(...d.chart.map(c=>parseInt(c.total)),1);
+      cb.innerHTML=d.chart.map(c=>{
+        const h=Math.max(6,Math.round(parseInt(c.total)/mx*80));
+        return`<div class="chart-col"><div class="chart-bar" style="height:${h}px" title="${c.total} cerita"></div><div class="chart-lbl">${c.tgl.slice(5)}</div></div>`;
+      }).join('');
+    } else {cb.innerHTML='<span style="color:#ddd;font-size:0.82rem">Belum ada data minggu ini</span>';}
+
+    // Terbaru
+    const tb=document.getElementById('tb-recent');
+    if(!d.terbaru.length){tb.innerHTML='<tr class="empty-row"><td colspan="6">Belum ada cerita</td></tr>';return;}
+    tb.innerHTML=d.terbaru.map(c=>`<tr>
+      <td><strong style="color:#880e4f">${esc(c.judul||'(tanpa judul)')}</strong></td>
+      <td>${esc(c.nama_panggilan)}</td><td>${badgeP(c.perasaan)}</td><td>${badgePr(c.privasi)}</td>
+      <td style="color:#bbb;font-size:0.8rem">${ago(c.created_at)}</td>
+      <td><button class="btn-xs btn-view" onclick="bukaDetail(${c.id})">👁 Lihat</button></td>
+    </tr>`).join('');
+  }
+
+  // ===== CERITA =====
+  async function loadCerita(){
+    const search=document.getElementById('srCerita')?.value||'';
+    const privasi=document.getElementById('flPrivasi')?.value||'';
+    const perasaan=document.getElementById('flPerasaan')?.value||'';
+    const r=await fetch(`${API}?action=get_cerita&search=${encodeURIComponent(search)}&privasi=${privasi}&perasaan=${perasaan}`);
+    const j=await r.json();
+    const tb=document.getElementById('tb-cerita');
+    if(!j.success||!j.data.length){tb.innerHTML='<tr class="empty-row"><td colspan="10">Tidak ada cerita ditemukan</td></tr>';return;}
+    tb.innerHTML=j.data.map((c,i)=>`<tr>
+      <td style="color:#ddd">${i+1}</td>
+      <td><strong style="color:#3d0020;font-size:0.85rem">${esc(c.judul||'(tanpa judul)')}</strong></td>
+      <td>${esc(c.nama_panggilan)}</td>
+      <td style="color:#bbb;font-size:0.75rem">${esc(c.user_email||'–')}</td>
+      <td>${badgeP(c.perasaan)}</td><td>${badgePr(c.privasi)}</td>
+      <td>${c.likes}</td><td>${c.dukungan_count}</td>
+      <td style="color:#bbb;font-size:0.78rem;white-space:nowrap">${ago(c.created_at)}</td>
+      <td style="white-space:nowrap">
+        <button class="btn-xs btn-view" onclick="bukaDetail(${c.id})">👁</button>
+        <button class="btn-xs btn-del" onclick="hapusCerita(${c.id},this)" style="margin-left:4px">🗑</button>
+      </td>
+    </tr>`).join('');
+  }
+
+  // ===== DUKUNGAN =====
+  async function loadDukungan(){
+    const r=await fetch(API+'?action=get_dukungan');
+    const j=await r.json();
+    const tb=document.getElementById('tb-dukungan');
+    if(!j.success||!j.data.length){tb.innerHTML='<tr class="empty-row"><td colspan="7">Belum ada dukungan</td></tr>';return;}
+    tb.innerHTML=j.data.map((d,i)=>`<tr>
+      <td style="color:#ddd">${i+1}</td>
+      <td><strong>${esc(d.nama||'Anonim')}</strong></td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(d.isi)}</td>
+      <td style="color:#880e4f;font-size:0.78rem">${esc(d.cerita_judul||'–')}</td>
+      <td>${d.is_admin==1?'<span class="badge b-admin">👑 Admin</span>':'<span class="badge b-anonim">User</span>'}</td>
+      <td style="color:#bbb;font-size:0.78rem">${ago(d.created_at)}</td>
+      <td><button class="btn-xs btn-del" onclick="hapusDukungan(${d.id},this)">🗑</button></td>
+    </tr>`).join('');
+  }
+
+  // ===== USERS =====
+  async function loadUsers(){
+    const r=await fetch(API+'?action=get_users');
+    const j=await r.json();
+    const tb=document.getElementById('tb-users');
+    if(!j.success||!j.data.length){tb.innerHTML='<tr class="empty-row"><td colspan="6">Belum ada user</td></tr>';return;}
+    tb.innerHTML=j.data.map((u,i)=>`<tr>
+      <td style="color:#ddd">${i+1}</td>
+      <td><strong style="color:#3d0020">${esc(u.nama_panggilan||'Anonim')}</strong></td>
+      <td style="color:#bbb;font-size:0.82rem">${esc(u.email)}</td>
+      <td><span class="badge b-publik">${u.jumlah_cerita} cerita</span></td>
+      <td style="color:#bbb;font-size:0.78rem">${ago(u.created_at)}</td>
+      <td><button class="btn-xs btn-del" onclick="hapusUser(${u.id},this)">🗑</button></td>
+    </tr>`).join('');
+  }
+
+  // ===== DETAIL =====
+  async function bukaDetail(id){
+    currentCeritaId=id;
+    document.getElementById('modalTitle').textContent='Memuat...';
+    document.getElementById('modalMeta').innerHTML='';
+    document.getElementById('modalIsi').innerHTML='<span style="color:#ddd">Memuat cerita...</span>';
+    document.getElementById('dukList').innerHTML='';
+    document.getElementById('replyTa').value='';
+    document.getElementById('modalBg').classList.add('open');
+
+    const r=await fetch(API+'?action=get_detail&id='+id);
+    const j=await r.json();
+    if(!j.success){document.getElementById('modalIsi').textContent='Gagal memuat.';return;}
+    const c=j.data;
+    document.getElementById('modalTitle').textContent=c.judul||'(Tanpa Judul)';
+    document.getElementById('modalMeta').innerHTML=`${badgeP(c.perasaan)} ${badgePr(c.privasi)} <span style="color:#bbb;font-size:0.8rem">oleh <strong>${esc(c.nama_panggilan)}</strong></span>`;
+    document.getElementById('modalIsi').textContent=c.isi;
+    document.getElementById('modalStats').innerHTML=`<span>❤️ ${c.likes} suka</span><span>💬 ${c.dukungan.length} dukungan</span><span style="color:#bbb">📧 ${esc(c.user_email||'–')}</span>`;
+
+    const dl=document.getElementById('dukList');
+    if(!c.dukungan.length){dl.innerHTML='<p style="color:#ddd;font-size:0.82rem;text-align:center;padding:8px 0">Belum ada dukungan</p>';}
+    else {
+      dl.innerHTML=c.dukungan.map(d=>{
+        const isA=d.is_admin==1;
+        return`<div class="duk-item">
+          <div class="duk-av ${isA?'admin-av-d':'user-av-d'}">${isA?'👑':(d.nama||'A')[0].toUpperCase()}</div>
+          <div class="duk-bubble ${isA?'admin-bubble':''}">
+            <div class="duk-name">${esc(d.nama||'Anonim')}${isA?' <span class="badge b-admin" style="font-size:0.6rem">Admin</span>':''}</div>
+            <div class="duk-text">${esc(d.isi)}</div>
+            <div class="duk-time">${ago(d.created_at)}</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  async function kirimBalasan(){
+    const isi=document.getElementById('replyTa').value.trim();
+    if(!isi){alert('Tulis balasan dulu!');return;}
+    const r=await fetch(API+'?action=balas',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cerita_id:currentCeritaId,isi})});
+    const j=await r.json();
+    if(j.success){
+      document.getElementById('replyTa').value='';
+      const dl=document.getElementById('dukList');
+      const d=j.data;
+      const newEl=document.createElement('div');
+      newEl.className='duk-item';
+      newEl.innerHTML=`<div class="duk-av admin-av-d">👑</div><div class="duk-bubble admin-bubble"><div class="duk-name">Admin <span class="badge b-admin" style="font-size:0.6rem">Admin</span></div><div class="duk-text">${esc(d.isi)}</div><div class="duk-time">baru saja</div></div>`;
+      const emptyMsg=dl.querySelector('p');
+      if(emptyMsg) emptyMsg.remove();
+      dl.appendChild(newEl);
+    } else {alert('Gagal kirim: '+(j.message||'Error'));}
+  }
+
+  function closeModal(e){if(!e||e.target===document.getElementById('modalBg')||e.currentTarget===document.getElementById('modalBg')&&e.target===e.currentTarget){document.getElementById('modalBg').classList.remove('open')}}
+
+  // ===== HAPUS =====
+  async function hapusCerita(id,btn){
+    if(!confirm('Hapus cerita ini secara permanen?'))return;
+    const r=await fetch(API+'?action=hapus_cerita',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});
+    const j=await r.json();
+    if(j.success)btn.closest('tr').remove();else alert('Gagal menghapus');
+  }
+  async function hapusUser(id,btn){
+    if(!confirm('Hapus user ini? Semua ceritanya akan ikut terhapus!'))return;
+    const r=await fetch(API+'?action=hapus_user',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});
+    const j=await r.json();
+    if(j.success)btn.closest('tr').remove();else alert('Gagal menghapus');
+  }
+  async function hapusDukungan(id,btn){
+    if(!confirm('Hapus dukungan ini?'))return;
+    const r=await fetch(API+'?action=hapus_dukungan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})});
+    const j=await r.json();
+    if(j.success)btn.closest('tr').remove();else alert('Gagal menghapus');
+  }
+
+  // ===== LOGOUT =====
+  async function doLogout(){
+    if(!confirm('Yakin ingin logout?'))return;
+    await fetch(API+'?action=logout');
+    sessionStorage.removeItem('rr_admin');
+    location.href='login.html';
+  }
+
+  loadDashboard();
+</script>
+</body>
+</html>

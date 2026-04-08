@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mulai Curhat – Ruang Rasa</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <div id="navbar-container"></div>
+
+  <main class="flex-1 py-10 px-4">
+    <div class="max-w-2xl mx-auto">
+
+      <div class="bg-white rounded-2xl shadow-md p-8 animate-fade-up">
+        <h1 class="text-2xl md:text-3xl font-bold text-center mb-8" style="font-family:'Playfair Display',serif; color: var(--text-dark);">
+          Mulai Menulis Cerita
+        </h1>
+
+        <!-- Perasaan -->
+        <div class="mb-6">
+          <p class="form-label mb-3">Saat ini aku merasa...</p>
+          <div class="flex flex-wrap gap-2" id="emotionList">
+            <button class="emotion-badge" data-value="sedih" onclick="selectEmotion(this)">sedih</button>
+            <button class="emotion-badge" data-value="senang" onclick="selectEmotion(this)">senang</button>
+            <button class="emotion-badge" data-value="kesal" onclick="selectEmotion(this)">kesal</button>
+            <button class="emotion-badge" data-value="cemas" onclick="selectEmotion(this)">cemas</button>
+            <button class="emotion-badge" data-value="bingung" onclick="selectEmotion(this)">bingung</button>
+            <button class="emotion-badge" data-value="lelah" onclick="selectEmotion(this)">lelah</button>
+          </div>
+          <input type="hidden" id="selectedEmotion" value="">
+        </div>
+
+        <!-- Judul -->
+        <div class="mb-6">
+          <label class="form-label" for="judulCerita">Judul Cerita <span class="font-normal text-gray-400">(Opsional)</span></label>
+          <input
+            type="text"
+            id="judulCerita"
+            class="form-input"
+            placeholder="contoh: hari yang melelahkan...."
+            maxlength="100"
+          >
+        </div>
+
+        <!-- Isi Cerita -->
+        <div class="mb-6">
+          <label class="form-label" for="isiCerita">Isi Cerita</label>
+          <textarea
+            id="isiCerita"
+            class="form-input"
+            rows="7"
+            placeholder="ceritakan apa yang terjadi.."
+            maxlength="3000"
+          ></textarea>
+          <p class="text-right text-xs mt-1" style="color: #aaa;" id="charCount">0 / 3000</p>
+        </div>
+
+        <!-- Nama Panggilan -->
+        <div class="mb-8">
+          <label class="form-label" for="namaPanggilan">Nama Panggilan</label>
+          <input
+            type="text"
+            id="namaPanggilan"
+            class="form-input"
+            placeholder="Anonim"
+            maxlength="50"
+          >
+          <p class="text-xs mt-1" style="color: #999;">Kosongkan untuk tampil sebagai Anonim</p>
+        </div>
+
+        <!-- Privasi Cerita -->
+        <div class="mb-8">
+          <p class="form-label mb-3">Siapa yang bisa melihat cerita ini?</p>
+          <div class="grid grid-cols-2 gap-3">
+            <label id="opt-publik" onclick="setPrivasi('publik')" style="cursor:pointer;border:2px solid #c2185b;border-radius:12px;padding:14px;display:flex;align-items:flex-start;gap:10px;background:#fce4ec;transition:all 0.2s;">
+              <input type="radio" name="privasi" value="publik" checked style="margin-top:3px;accent-color:#c2185b;">
+              <div>
+                <p style="font-weight:700;font-size:0.88rem;color:#c2185b;">🌍 Publik</p>
+                <p style="font-size:0.72rem;color:#999;margin-top:2px;">Semua orang bisa melihat & memberi dukungan</p>
+              </div>
+            </label>
+            <label id="opt-anonim" onclick="setPrivasi('anonim')" style="cursor:pointer;border:2px solid #ddd;border-radius:12px;padding:14px;display:flex;align-items:flex-start;gap:10px;background:#fff;transition:all 0.2s;">
+              <input type="radio" name="privasi" value="anonim" style="margin-top:3px;accent-color:#c2185b;">
+              <div>
+                <p style="font-weight:700;font-size:0.88rem;color:#666;">🔒 Hanya Admin</p>
+                <p style="font-size:0.72rem;color:#999;margin-top:2px;">Disembunyikan dari publik, hanya admin yang melihat</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Error -->
+        <p id="formError" class="text-sm text-center mb-4 hidden" style="color:#e53e3e;"></p>
+
+        <!-- Submit -->
+        <button onclick="submitCerita()" class="btn-primary w-full text-center py-4 text-base" style="border-radius: 12px;">
+          Bagikan Cerita
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- SUCCESS MODAL -->
+  <div id="successModal" class="fixed inset-0 z-50 hidden items-center justify-center px-4" style="background: rgba(0,0,0,0.5);">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center animate-fade-up">
+      <div class="text-5xl mb-4">🌸</div>
+      <h2 class="text-xl font-bold mb-2" style="color: var(--pink-primary); font-family:'Playfair Display',serif;">Cerita Terkirim!</h2>
+      <p class="text-sm mb-6" style="color: #666;">Terima kasih sudah berbagi. Ceritamu berharga dan kamu tidak sendiri 💕</p>
+      <div class="flex gap-3">
+        <a href="../pages/baca-cerita.html" class="btn-outline flex-1 text-center">Baca Cerita</a>
+        <button onclick="closeModal()" class="btn-primary flex-1">Tulis Lagi</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-container"></div>
+
+  <script src="../js/components.js"></script>
+  <script>
+    initPage('curhat');
+
+    // Set user nama panggilan
+    const user = JSON.parse(localStorage.getItem('rr_user') || '{}');
+    if (user.nama_panggilan) {
+      document.getElementById('namaPanggilan').value = user.nama_panggilan;
+    }
+    const initial = (user.nama_panggilan || user.email || 'A')[0].toUpperCase();
+    const avatarEl = document.getElementById('avatarInitial');
+    if (avatarEl) avatarEl.textContent = initial;
+
+    // Char counter
+    document.getElementById('isiCerita').addEventListener('input', function() {
+      document.getElementById('charCount').textContent = this.value.length + ' / 3000';
+    });
+
+    function selectEmotion(el) {
+      document.querySelectorAll('.emotion-badge').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('selectedEmotion').value = el.dataset.value;
+    }
+
+    function setPrivasi(val) {
+      document.querySelectorAll('input[name="privasi"]').forEach(r => r.checked = r.value === val);
+      const oP = document.getElementById('opt-publik');
+      const oA = document.getElementById('opt-anonim');
+      if (val === 'publik') {
+        oP.style.border = '2px solid #c2185b';
+        oP.style.background = '#fce4ec';
+        oA.style.border = '2px solid #ddd';
+        oA.style.background = '#fff';
+      } else {
+        oA.style.border = '2px solid #555';
+        oA.style.background = '#f3f4f6';
+        oP.style.border = '2px solid #ddd';
+        oP.style.background = '#fff';
+      }
+    }
+
+    async function submitCerita() {
+      const perasaan = document.getElementById('selectedEmotion').value;
+      const judul    = document.getElementById('judulCerita').value.trim();
+      const isi      = document.getElementById('isiCerita').value.trim();
+      const nama     = document.getElementById('namaPanggilan').value.trim() || 'Anonim';
+      const privasi  = document.querySelector('input[name="privasi"]:checked')?.value || 'publik';
+      const errEl    = document.getElementById('formError');
+
+      if (!perasaan) {
+        errEl.textContent = 'Pilih dulu perasaan kamu ya!';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      if (!isi) {
+        errEl.textContent = 'Isi cerita tidak boleh kosong!';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      if (isi.length < 10) {
+        errEl.textContent = 'Cerita terlalu singkat, minimal 10 karakter.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      errEl.classList.add('hidden');
+
+      const result = await DB.saveStory({ judul, isi, nama_panggilan: nama, perasaan, privasi });
+      if (result && result.success) {
+        const modal = document.getElementById('successModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      } else {
+        errEl.textContent = (result && result.message) || 'Gagal menyimpan cerita. Coba lagi.';
+        errEl.classList.remove('hidden');
+      }
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('successModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      // Reset form
+      document.getElementById('judulCerita').value = '';
+      document.getElementById('isiCerita').value = '';
+      document.getElementById('charCount').textContent = '0 / 3000';
+      document.getElementById('selectedEmotion').value = '';
+      document.querySelectorAll('.emotion-badge').forEach(b => b.classList.remove('active'));
+    }
+  </script>
+</body>
+</html>

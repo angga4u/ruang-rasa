@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login – Ruang Rasa</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="login-page-body">
+
+  <div class="login-wrapper">
+
+    <div class="login-image">
+      <img src="../public/images/login.png" alt="Ruang Rasa Landscape">
+    </div>
+
+    <div class="login-form-card">
+
+      <div class="login-logo-float">
+        <img src="../public/images/remove.png" alt="Logo Ruang Rasa">
+      </div>
+
+      <div id="loginForm">
+        <h1 class="login-page-title">LOGIN</h1>
+
+        <div class="login-input-group">
+          <label class="input-label">Email</label>
+          <input type="email" id="email" class="input-field" placeholder="masukkan email kamu...">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+        </div>
+
+        <div class="login-input-group">
+          <label class="input-label">Password</label>
+          <input type="password" id="password" class="input-field" placeholder="masukkan password...">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="#c2185b">
+            <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2zm0 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm0 8c-2.67 0-5.33-1.33-6.67-3.33C6.67 11.33 9.33 10 12 10s5.33 1.33 6.67 2.67C17.33 14.67 14.67 16 12 16z"/>
+          </svg>
+        </div>
+
+        <p id="loginError" class="login-error-msg"></p>
+
+        <button class="btn-login-page" onclick="handleLogin()">LOGIN</button>
+
+        <p class="login-register-link">
+          Belum punya akun?
+          <a onclick="showRegisterForm()">Daftar di sini</a>
+        </p>
+      </div>
+
+      <div id="registerForm" style="display:none;">
+        <h1 class="login-page-title">DAFTAR</h1>
+
+        <div class="login-input-group">
+          <label class="input-label">Email</label>
+          <input type="email" id="regEmail" class="input-field" placeholder="masukkan email kamu...">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+        </div>
+
+        <div class="login-input-group">
+          <label class="input-label">Nama Panggilan</label>
+          <input type="text" id="regNama" class="input-field" placeholder="contoh: Anonim, Pemimpi...">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+
+        <div class="login-input-group">
+          <label class="input-label">Password</label>
+          <input type="password" id="regPass" class="input-field" placeholder="buat password...">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="#c2185b">
+            <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2zm0 6a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/>
+          </svg>
+        </div>
+
+        <p id="regError" class="login-error-msg"></p>
+
+        <button class="btn-login-page" onclick="handleRegister()">DAFTAR</button>
+
+        <p class="login-register-link">
+          Sudah punya akun?
+          <a onclick="showLoginForm()">Login di sini</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../js/components.js"></script>
+  <script>
+    initLoginPage();
+  </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detail Cerita – Ruang Rasa</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <div id="navbar-container"></div>
+
+  <main class="flex-1 py-8 px-4">
+    <div class="max-w-2xl mx-auto">
+
+      <a href="baca-cerita.html" class="flex items-center gap-2 mb-4 font-bold text-sm" style="color: var(--pink-primary);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Kembali ke Cerita
+      </a>
+
+      <div id="loadingState" class="text-center py-16">
+        <p class="text-3xl mb-3 animate-pulse">🌸</p>
+        <p class="text-sm" style="color: #aaa;">Memuat cerita...</p>
+      </div>
+
+      <div id="storyContent" class="hidden animate-fade-up"></div>
+
+      <div id="notFound" class="hidden text-center py-16">
+        <p class="text-4xl mb-3">🌸</p>
+        <p class="font-bold text-lg" style="color: var(--text-medium);">Cerita tidak ditemukan</p>
+        <a href="baca-cerita.html" class="btn-primary mt-4 inline-block">Kembali</a>
+      </div>
+
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="../js/components.js"></script>
+  <script>
+    initPage('cerita');
+
+    const user    = JSON.parse(localStorage.getItem('rr_user') || '{}');
+    const initial = (user.nama_panggilan || user.email || 'A')[0].toUpperCase();
+    setTimeout(() => {
+      const avatarEl = document.getElementById('avatarInitial');
+      if (avatarEl) avatarEl.textContent = initial;
+    }, 50);
+
+    const params  = new URLSearchParams(window.location.search);
+    const storyId = params.get('id');
+    let currentStory = null;
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    async function loadStory() {
+      if (!storyId) {
+        showNotFound();
+        return;
+      }
+
+      const story = await DB.getStoryById(storyId);
+      if (!story) {
+        showNotFound();
+        return;
+      }
+
+      currentStory = story;
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('storyContent').classList.remove('hidden');
+
+      renderStory(story);
+      await loadDukungan();
+    }
+
+    function showNotFound() {
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('notFound').classList.remove('hidden');
+    }
+
+    function renderStory(story) {
+      const isLiked = false; // akan dicek async setelah render
+
+      const isiFormatted = (story.isi || '').split('\n').map(p =>
+        p.trim() ? `<p class="mb-4 leading-relaxed text-base md:text-lg">${escapeHtml(p)}</p>` : ''
+      ).join('');
+
+      document.getElementById('storyContent').innerHTML = `
+        <div class="mb-6">
+          <p class="text-sm mb-1" style="color: var(--text-medium);">
+            By: <strong>${escapeHtml(story.nama_panggilan || 'Anonim')}</strong>
+            <span class="mx-2">•</span>
+            ${timeAgo(story.created_at)}
+          </p>
+          ${story.judul ? `<h1 class="text-2xl md:text-3xl font-bold mt-2 mb-6" style="color: var(--pink-primary); font-family:'Playfair Display',serif;">${escapeHtml(story.judul)}</h1>` : ''}
+        </div>
+
+        <article class="mb-8">${isiFormatted}</article>
+
+        <!-- Like Button -->
+        <div class="text-center mb-10">
+          <button id="likeBtn" onclick="toggleLike()" class="btn-support">
+            🤍 Beri Dukungan
+            <span id="likeCount" class="ml-1 font-bold">${story.likes || 0}</span>
+          </button>
+        </div>
+
+        <!-- Dukungan Section -->
+        <div class="border-t pt-6">
+          <h3 class="font-bold text-lg mb-4" style="color: var(--pink-primary); font-family:'Playfair Display',serif;">
+            Dukungan Teman
+          </h3>
+
+          <div id="dukunganList">
+            <p class="text-sm text-gray-400 mb-4">Memuat dukungan...</p>
+          </div>
+
+          <!-- Input Dukungan -->
+          <div class="flex items-start gap-3 mt-4">
+            <div class="avatar-circle text-xs flex-shrink-0" style="width:36px;height:36px;font-size:0.8rem;">
+              ${initial}
+            </div>
+            <div class="flex-1">
+              <input
+                type="text"
+                id="dukunganInput"
+                class="form-input"
+                placeholder="Tulis dukunganmu di sini..."
+                onkeydown="if(event.key==='Enter') kirimDukungan()"
+              >
+              <button onclick="kirimDukungan()" class="btn-primary mt-2 text-sm px-5 py-2">
+                Kirim
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      checkLikeStatus();
+    }
+
+    async function checkLikeStatus() {
+      const liked = await DB.isLiked(storyId);
+      const btn   = document.getElementById('likeBtn');
+      if (btn) {
+        const count = document.getElementById('likeCount').textContent;
+        btn.innerHTML = `${liked ? '💗' : '🤍'} Beri Dukungan <span id="likeCount" class="ml-1 font-bold">${count}</span>`;
+        if (liked) btn.style.background = 'var(--pink-pale)';
+      }
+    }
+
+    async function toggleLike() {
+      const btn = document.getElementById('likeBtn');
+      btn.disabled = true;
+
+      const result = await DB.toggleLike(storyId);
+      btn.disabled = false;
+
+      if (result.success) {
+        btn.innerHTML = `${result.liked ? '💗' : '🤍'} Beri Dukungan <span id="likeCount" class="ml-1 font-bold">${result.total}</span>`;
+      }
+    }
+
+    async function loadDukungan() {
+      const list     = document.getElementById('dukunganList');
+      if (!list) return;
+
+      const dukungan = await DB.getDukungan(storyId);
+
+      if (!dukungan.length) {
+        list.innerHTML = '<p class="text-sm text-gray-400 mb-4">Belum ada dukungan. Jadilah yang pertama! 💕</p>';
+        return;
+      }
+
+      list.innerHTML = dukungan.map(d => `
+        <div class="flex items-start gap-3 mb-4">
+          <div class="avatar-circle text-xs flex-shrink-0" style="width:36px;height:36px;font-size:0.8rem;">
+            ${escapeHtml((d.nama || 'A')[0].toUpperCase())}
+          </div>
+          <div class="flex-1 bg-white border rounded-xl px-4 py-3">
+            <p class="text-sm font-semibold mb-1" style="color: var(--pink-primary);">${escapeHtml(d.nama || 'Anonim')}</p>
+            <p class="text-sm" style="color: var(--text-dark);">${escapeHtml(d.isi)}</p>
+            <p class="text-xs mt-1" style="color: #aaa;">${timeAgo(d.created_at)}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function kirimDukungan() {
+      const input = document.getElementById('dukunganInput');
+      const isi   = input.value.trim();
+      if (!isi) return;
+
+      const nama = user.nama_panggilan || 'Anonim';
+
+      input.value    = '';
+      input.disabled = true;
+
+      const result = await DB.addDukungan(storyId, isi, nama);
+      input.disabled = false;
+
+      if (result.success) {
+        await loadDukungan(); // refresh list dari database
+      } else {
+        alert('Gagal mengirim dukungan. Coba lagi.');
+        input.value = isi;
+      }
+    }
+
+    loadStory();
+  </script>
+</body>
+</html>
