@@ -4,57 +4,107 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin – Ruang Rasa</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Nunito',sans-serif;min-height:100vh;background:linear-gradient(135deg,#1a0010 0%,#3d0020 50%,#880e4f 100%);display:flex;align-items:center;justify-content:center;padding:20px}
-    .card{background:#fff;border-radius:24px;padding:48px 40px 40px;width:100%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,0.4);position:relative}
-    .pill{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#880e4f,#c2185b);color:#fff;font-size:0.7rem;font-weight:800;letter-spacing:0.15em;padding:5px 20px;border-radius:999px;white-space:nowrap}
-    .logo{text-align:center;margin-bottom:28px}
-    .logo img{width:64px;height:64px;object-fit:contain;border-radius:50%;margin-bottom:10px}
-    .logo h1{font-family:'Playfair Display',serif;font-size:1.6rem;color:#880e4f}
-    .logo p{font-size:0.78rem;color:#bbb;margin-top:4px}
-    .field{margin-bottom:18px}
-    .field label{display:block;font-weight:700;color:#3d0020;font-size:0.82rem;margin-bottom:6px;letter-spacing:0.03em}
-    .field input{width:100%;border:1.5px solid #e8d8e0;border-radius:10px;padding:11px 14px;font-family:'Nunito',sans-serif;font-size:0.95rem;color:#3d0020;outline:none;background:#faf7f0;transition:border-color 0.2s,box-shadow 0.2s}
-    .field input:focus{border-color:#c2185b;box-shadow:0 0 0 3px rgba(194,24,91,0.1)}
-    .btn{width:100%;background:linear-gradient(135deg,#880e4f,#c2185b);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;margin-top:6px;transition:all 0.2s;letter-spacing:0.03em}
-    .btn:hover{background:linear-gradient(135deg,#6a0636,#880e4f);transform:translateY(-1px);box-shadow:0 6px 20px rgba(136,14,79,0.4)}
-    .err{background:#fff0f0;border:1px solid #fca5a5;color:#dc2626;border-radius:8px;padding:10px 14px;font-size:0.82rem;text-align:center;margin-bottom:14px;display:none}
-    .back{display:block;text-align:center;margin-top:18px;font-size:0.8rem;color:#ccc;text-decoration:none;transition:color 0.2s}
-    .back:hover{color:#c2185b}
-  </style>
+  <link rel="stylesheet" href="../css/style.css">
 </head>
-<body>
-<div class="card">
-  <div class="pill">✦ ADMIN PANEL ✦</div>
-  <div class="logo">
+<body class="admin-login-body">
+
+<div class="admin-login-bg-pattern"></div>
+
+<div class="admin-login-card">
+  <div class="admin-login-pill">✦ ADMIN PANEL ✦</div>
+
+  <div class="admin-login-logo">
     <img src="../public/images/remove.png" alt="Logo" onerror="this.style.display='none'">
     <h1>Ruang Rasa</h1>
     <p>Masuk sebagai administrator</p>
   </div>
-  <div id="err" class="err"></div>
-  <div class="field"><label>Email Admin</label><input type="email" id="email" placeholder="Admin@gmail.com"></div>
-  <div class="field"><label>Password</label><input type="password" id="pass" placeholder="••••••••"></div>
-  <button class="btn" onclick="login()">Masuk ke Dashboard</button>
-  <a href="../index.html" class="back">← Kembali ke website</a>
+
+  <div id="err" class="admin-login-err"></div>
+
+  <div class="admin-login-field">
+    <label>Email Admin</label>
+    <div class="input-wrap">
+      <input type="email" id="email" placeholder="admin@ruangrasa.com" autocomplete="email">
+    </div>
+  </div>
+
+  <div class="admin-login-field">
+    <label>Password</label>
+    <div class="input-wrap">
+      <input type="password" id="pass" placeholder="••••••••" autocomplete="current-password">
+      <button class="toggle-pass" id="toggleBtn" onclick="togglePassword()" type="button" title="Tampilkan password">
+        <svg id="iconEye" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <svg id="iconEyeOff" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <button class="admin-login-btn" id="btnLogin" onclick="login()">Masuk ke Dashboard</button>
+
+  <a href="../index.html" class="admin-login-back">
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Kembali ke website
+  </a>
 </div>
+
 <script>
-  if(sessionStorage.getItem('rr_admin')) location.href='dashboard.html';
-  async function login(){
-    const email=document.getElementById('email').value.trim();
-    const pass=document.getElementById('pass').value;
-    const err=document.getElementById('err');
-    err.style.display='none';
-    if(!email||!pass){err.textContent='Email dan password wajib diisi!';err.style.display='block';return;}
-    try{
-      const res=await fetch('../api/admin.php?action=login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
-      const json=await res.json();
-      if(json.success){sessionStorage.setItem('rr_admin',JSON.stringify(json.admin));location.href='dashboard.html';}
-      else{err.textContent=json.message||'Login gagal';err.style.display='block';}
-    }catch(e){err.textContent='Gagal menghubungi server.';err.style.display='block';}
+  if (sessionStorage.getItem('rr_admin')) location.href = 'dashboard.html';
+
+  function togglePassword() {
+    const input  = document.getElementById('pass');
+    const eyeOn  = document.getElementById('iconEye');
+    const eyeOff = document.getElementById('iconEyeOff');
+    const isHidden = input.type === 'password';
+    input.type        = isHidden ? 'text' : 'password';
+    eyeOn.style.display  = isHidden ? 'none'  : 'block';
+    eyeOff.style.display = isHidden ? 'block' : 'none';
   }
-  document.addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+
+  async function login() {
+    const email = document.getElementById('email').value.trim();
+    const pass  = document.getElementById('pass').value;
+    const err   = document.getElementById('err');
+    const btn   = document.getElementById('btnLogin');
+    err.style.display = 'none';
+    if (!email || !pass) {
+      err.textContent   = 'Email dan password wajib diisi!';
+      err.style.display = 'block';
+      return;
+    }
+    btn.disabled    = true;
+    btn.textContent = 'Masuk...';
+    try {
+      const res  = await fetch('../api/admin.php?action=login', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email, password: pass })
+      });
+      const json = await res.json();
+      if (json.success) {
+        sessionStorage.setItem('rr_admin', JSON.stringify(json.admin));
+        location.href = 'dashboard.html';
+      } else {
+        err.textContent   = json.message || 'Login gagal';
+        err.style.display = 'block';
+        btn.disabled      = false;
+        btn.textContent   = 'Masuk ke Dashboard';
+      }
+    } catch (e) {
+      err.textContent   = 'Gagal menghubungi server.';
+      err.style.display = 'block';
+      btn.disabled      = false;
+      btn.textContent   = 'Masuk ke Dashboard';
+    }
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
 </script>
 </body>
 </html>

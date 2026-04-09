@@ -19,16 +19,13 @@
       </h1>
       <p id="welcomeMsg" class="text-sm mb-8" style="color: var(--text-medium);"></p>
 
-      <!-- Loading -->
       <div id="loadingState" class="text-center py-16">
         <p class="text-3xl mb-3 animate-pulse">🌸</p>
         <p class="text-sm" style="color: #aaa;">Memuat riwayat...</p>
       </div>
 
-      <!-- List -->
       <div id="riwayatList" class="hidden"></div>
 
-      <!-- Empty state -->
       <div id="emptyState" class="hidden text-center py-16">
         <p class="text-5xl mb-4">📖</p>
         <p class="text-lg font-bold mb-2" style="color: var(--text-medium);">Belum ada cerita</p>
@@ -53,7 +50,6 @@
       if (avatarEl) avatarEl.textContent = initial;
     }, 50);
 
-    // Tampilkan nama user
     const welcomeEl = document.getElementById('welcomeMsg');
     if (user.nama_panggilan || user.email) {
       welcomeEl.textContent = 'Halo, ' + (user.nama_panggilan || user.email) + ' 👋';
@@ -64,10 +60,10 @@
       return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    function statusColor(status) {
-      if (status === 'diterbitkan') return '#2e7d32';
-      if (status === 'dimoderasi')  return '#f57c00';
-      return '#1565c0';
+    function privacyBadge(privasi) {
+      return privasi === 'publik'
+        ? '<span style="background:#dcfce7;color:#15803d;font-size:0.7rem;padding:2px 8px;border-radius:999px;font-weight:700;">🌍 Publik</span>'
+        : '<span style="background:#f3f4f6;color:#6b7280;font-size:0.7rem;padding:2px 8px;border-radius:999px;font-weight:700;">🔒 Anonim</span>';
     }
 
     async function renderRiwayat() {
@@ -75,7 +71,6 @@
       const empty   = document.getElementById('emptyState');
       const loading = document.getElementById('loadingState');
 
-      // Kalau tidak login, tampilkan pesan
       if (!user.id) {
         loading.classList.add('hidden');
         empty.classList.remove('hidden');
@@ -86,12 +81,10 @@
         return;
       }
 
-      // Ambil cerita milik user dari database
-      const stories = await DB.getMyStories(user.id);
-
+      const stories = await DB.getMyStories();
       loading.classList.add('hidden');
 
-      if (!stories.length) {
+      if (!stories || !stories.length) {
         empty.classList.remove('hidden');
         return;
       }
@@ -100,7 +93,7 @@
       list.innerHTML = stories.map(story => `
         <div class="story-card mb-5 animate-fade-up">
           <div class="card-meta">
-            <span>Status: <strong style="color: ${statusColor(story.status)}">${story.status || 'terkirim'}</strong></span>
+            <span>${privacyBadge(story.privasi)}</span>
             <span>${timeAgo(story.created_at)}</span>
           </div>
           ${story.judul ? `<h2 class="card-title">${escapeHtml(story.judul)}</h2>` : ''}

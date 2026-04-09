@@ -33,8 +33,7 @@
         <p class="text-sm" style="color: #aaa;">Memuat cerita...</p>
       </div>
 
-      <div id="storyGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
-      </div>
+      <div id="storyGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden"></div>
 
       <div id="emptyState" class="hidden text-center py-16">
         <p class="text-4xl mb-4">🌸</p>
@@ -70,19 +69,22 @@
     }
 
     async function renderStories() {
-      const grid     = document.getElementById('storyGrid');
-      const empty    = document.getElementById('emptyState');
-      const loading  = document.getElementById('loadingState');
+      const grid    = document.getElementById('storyGrid');
+      const empty   = document.getElementById('emptyState');
+      const loading = document.getElementById('loadingState');
 
       loading.classList.remove('hidden');
       grid.classList.add('hidden');
       empty.classList.add('hidden');
 
-      const stories = await DB.getStories(currentFilter);
+      // Kirim filter sebagai object ke DB.getStories
+      const params = {};
+      if (currentFilter) params.perasaan = currentFilter;
+      const stories = await DB.getStories(params);
 
       loading.classList.add('hidden');
 
-      if (!stories.length) {
+      if (!stories || !stories.length) {
         empty.classList.remove('hidden');
         return;
       }
@@ -114,7 +116,7 @@
       btn.disabled = true;
       const result = await DB.toggleLike(id);
       btn.disabled = false;
-      if (result.success) {
+      if (result && result.success) {
         document.getElementById('like-count-' + id).textContent = result.total;
       }
     }
